@@ -49,7 +49,7 @@ class index extends Component{
             return {status:true,a,b,c};
 
         }
-       return {status:false};
+       return {status:false,error:"Invalid Properties values"};
    }
    componentDidMount(){
         // console.log(Objet.key)
@@ -62,12 +62,27 @@ class index extends Component{
         }
 
         let {a,b,c} = this.props.query;
-        let status
-        ({status,a=a,b=b,c=c} = this.validation({a,b,c}));
-        
-        console.log('is props Valid',status);
+        let status,error;
+        ({status,a=a,b=b,c=c,error} = this.validation({a,b,c}));
+        if(status){
+            this.setState((state)=>{
+                return {
+                    ...state,
+                    checking:false,
+                }
+            })
+            this.setupCanvas({a,b,c});
+        }
+        else{
+            this.setState((state)=>{
+               return  {
+                    ...state,
+                    checking:false,
+                    error:error
+                }
+            })
+        }
 
-        this.setupCanvas({a,b,c});
         if(!this.props.query){
             alert('Exception Handled');
         }
@@ -78,10 +93,9 @@ class index extends Component{
 
     }
     setupCanvas=({a,b,c})=>{
-
-        // let a="3";//perpendicular
-        // let b="4";//b
-        // let c="5";//h
+        // artificial Delay to show come calculations are being made for this
+        setTimeout(data=>{
+                
         let canvas = this.canvas = this.refs.canvasCtx
         canvas.width=window.innerWidth-20;
         canvas.height=window.innerHeight*2;
@@ -124,6 +138,7 @@ class index extends Component{
             });
 
         }
+    },200);
 
     }
     drawRectangle=({ ctx ,points:[x,y],width,height , rotate ,scale ,value})=>{
@@ -210,18 +225,18 @@ class index extends Component{
     }
     render(){
         
-        // if(this.state.checking || this.state.error){
-        //         return  (
-        //             <React.Fragment>
-        //                        {this.state.error || "Wait loading..."} 
-        //             </React.Fragment>
-        //         )
-        // }
+        if(this.state.checking || this.state.error){
+                return  (
+                    <React.Fragment>
+                               {this.state.error || "Wait loading..."} 
+                    </React.Fragment>
+                )
+        }
 
-        // if(this.state.error){
-        //     alert(this.state.error);
-        //     return 0;
-        // }
+        if(this.state.error){
+            alert(this.state.error);
+            return 0;
+        }
 
 
         return(
