@@ -115,7 +115,13 @@ class index extends Component{
             }
             else if(type=="h"){
                 let length = text*scaleFactor;
-                let point = [x+(length/2),y-(length/2)+30];
+                let point=[];
+                if(text < 10){
+                     point = [x+(length/2),y-(length/2)+30];
+                }
+                else{
+                    point=[x+(length/4)-90,y-(length/4)];
+                }
                 ctx.fillStyle="black"
                 ctx.fillText(text,...point)
                 ctx.fillStyle=this.state.color2
