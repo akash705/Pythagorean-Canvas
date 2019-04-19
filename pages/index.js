@@ -39,8 +39,14 @@ class index extends Component{
        let sqb=Math.pow(b,2);
        // h    
        let sqc=Math.pow(c,2);
+       
+    //    a should be small
 
        if(sqc===(sqa+sqb)){
+           if(a  > b){
+               [a,b]=[b,a];
+               console.log('swapping vlaues');
+           }
             return {status:true,a,b,c};
         }
        return {status:false,error:"Values Don't pass Pythagoras Theorem"};
@@ -86,7 +92,7 @@ class index extends Component{
         }
 
     }
-    drawingText=({point:[x,y],text,ctx,type,scaleFactor})=>{
+    drawingText=({point:[x,y],text,ctx,type,scaleFactor,rotate})=>{
             ctx.resetTransform();
         ctx.font="30px Arial";
         
@@ -95,17 +101,29 @@ class index extends Component{
             }
             if(type=="p"){
                 let length = text*scaleFactor;
-                let point = [x-40,(y+length/2)+15]
-                ctx.fillStyle=this.state.color
+                let point = [x,(y+length/2)]
+                ctx.fillStyle="black"
                 ctx.fillText(text,...point)
-                
+                ctx.fillStyle=this.state.color;
             }
             else if(type=="b"){
                 let length = text*scaleFactor;
-                let point = [(x-length/2)-15,y-5];
-                ctx.fillStyle=this.state.color2
+                let point = [(x-length/2),y];
+                ctx.fillStyle="black"
                 ctx.fillText(text,...point)
+                ctx.fillStyle=this.state.color2
+            }
+            else if(type=="h"){
+                let length = text*scaleFactor;
+                let point = [x+(length/2),y-(length/2)+30];
+                ctx.fillStyle="black"
+                ctx.fillText(text,...point)
+                ctx.fillStyle=this.state.color2
                 
+                ctx.translate(x,y);
+                ctx.rotate(-(rotate+90)* Math.PI / 180);
+                ctx.translate(-x,-y);
+
             }
             ctx.stroke();
 
@@ -119,7 +137,7 @@ class index extends Component{
         canvas.height=window.innerHeight*2;
         let ctx = this.ctx = this.canvas.getContext("2d");
         let { points , scaleFactor } = this.drawTriangle({canvas:this.canvas,ctx:this.ctx,a,b,c});
-        console.log(points);
+        // console.log(points);
 
     //    for perpendicular
         {
@@ -133,8 +151,8 @@ class index extends Component{
                     type:'p',
                     mainColor:this.state.color
                 });
+                this.drawingText({point:points[0],text:a,ctx,type:'p',scaleFactor});
         }
-        this.drawingText({point:points[0],text:a,ctx,type:'p',scaleFactor});
         // for base
         {
             let width2 = this.getWidth([...points[1],...points[2]]);
@@ -147,8 +165,8 @@ class index extends Component{
                 type:'b',
                 mainColor:this.state.color2
             });
+            this.drawingText({point:points[1],text:b,ctx,type:'b',scaleFactor});
         }
-        this.drawingText({point:points[1],text:b,ctx,type:'b',scaleFactor});
 
         // for hypotenuse 
 
@@ -164,7 +182,7 @@ class index extends Component{
                 value:c,
                 type:'h'
             });
-
+            this.drawingText({point:points[2],text:c,ctx,type:'h',scaleFactor,rotate:angle});
         }
     },200);
 
@@ -182,20 +200,6 @@ class index extends Component{
 
                 ctx.fillRect(0,0,width,height );
                 ctx.translate(-x,-y);
-                // ctx.font="30px Arial";
-                // ctx.fillStyle="green";
-
-                    // if(rotate){
-
-                    //     ctx.translate(x,y);
-                    //     ctx.rotate((rotate+90)* Math.PI / 180);
-                    //     ctx.fillText(value,0,-width/2);
-                    //     ctx.rotate(-(rotate+90)* Math.PI / 180);
-                    //     ctx.translate(-x,-y);
-
-                    // }else{
-                    //     ctx.fillText(value,x+(width/2)-15,y+width/2);
-                    // }
 
                 ctx.stroke();
                 this.drawingInnerLines({x,y,width,scale,ctx,value,type});
@@ -235,15 +239,47 @@ class index extends Component{
             } 
             // console.log('horizontal lines',horizontalLines);
             if(type=="h"){
-                    // console.log('hi this is hypotaneus working on its lines');
-                    // console.log(verticalLines,horizontalLines);
-                    this.paintingHRect({verticalLines,horizontalLines,scale,width});
+                 
+                    this.paintingHRect({verticalLines,horizontalLines,scale,width,distance,ctx});
             }
            
     }
-    paintingHRect=({verticalLines,horizontalLines})=>{
+    paintingHRect=({verticalLines,horizontalLines,distance,width,scale,ctx})=>{
+        
             // console.log(verticalLines,horizontalLines);
-    }
+            ctx.fillStyle=this.state.color;
+            for(let i=horizontalLines.length-1;i>=-1;i--){
+                let points=horizontalLines[i];
+                if(points){
+                    let x = points[0]-distance;
+                    // console.log('points',x,points[1]);
+                    ctx.fillRect(x,points[1],distance,distance);
+                    ctx.strokeStyle="black";
+                    ctx.stroke();
+                }else{
+                    points= horizontalLines[0];
+                    let x = points[0]-(distance);
+                    console.log('last point',x,points[1]);
+                    ctx.fillRect(x,points[1]-distance,distance,distance);
+
+                }
+            }
+            for(let i=verticalLines.length-1;i>=-1;i--){
+                let points=verticalLines[i];
+                if(points){
+                    let y = points[1]+width-distance;
+                    ctx.fillRect(points[0]-width,y,distance,distance);
+                    ctx.strokeStyle="white";
+                    ctx.stroke();
+                    // console.log('points',points[0]-width,y);
+                }else{
+                    points= verticalLines[verticalLines.length-1];
+                    let y = points[1]+(width-distance);
+                    let x = points[0]-(width+distance*verticalLines.length);
+                    ctx.fillRect(x,y,distance,distance);
+                }
+            }
+        }
     drawTriangle=({canvas,ctx,a,b,c})=>{
         ctx.beginPath();
         let scaleFactor=(c<30) ? 30:15
