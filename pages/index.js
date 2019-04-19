@@ -355,7 +355,6 @@ class index extends Component{
                 <style global jsx>{`
                     canvas{
                         border:1px solid black;
-                        background:green;
                     }
                     body{
                         margin:0px;
