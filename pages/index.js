@@ -8,6 +8,8 @@ class index extends Component{
    state={
         error:false,
         checking:true,
+        color:randomColor(),//perpendicular color
+        color2:randomColor()//base color
     }
    static getInitialProps =({query,params})=>{
     return {query};
@@ -92,6 +94,7 @@ class index extends Component{
         canvas.height=window.innerHeight*2;
         let ctx = this.ctx = this.canvas.getContext("2d");
         let { points , scaleFactor } = this.drawTriangle({canvas:this.canvas,ctx:this.ctx,a,b,c});
+    //    for perpendicular
         {
             let width1 = this.getWidth([...points[0],...points[1]]);
                 this.drawRectangle({
@@ -99,7 +102,9 @@ class index extends Component{
                     points:points[0],
                     width:width1,
                     height:width1,
-                    value:a
+                    value:a,
+                    type:'p',
+                    mainColor:this.state.color
                 });
         }
         // for base
@@ -110,7 +115,9 @@ class index extends Component{
                 points:points[2],
                 width:width2,
                 height:width2,
-                value:b
+                value:b,
+                type:'b',
+                mainColor:this.state.color2
             });
         }
 
@@ -125,36 +132,50 @@ class index extends Component{
                 width:width3,
                 height:width3  ,
                 rotate:angle,
-                value:c
+                value:c,
+                type:'h'
             });
 
         }
     },200);
 
     }
-    drawRectangle=({ ctx ,points:[x,y],width,height , rotate ,scale ,value})=>{
+    drawRectangle=({ ctx ,points:[x,y],width,height , rotate ,scale ,value,mainColor=randomColor(),type})=>{
         ctx.moveTo(x,y);
         ctx.lineWidth = 2;
         ctx.moveTo(0,0);
         ctx.save();
-                
                 ctx.translate(x,y);
                 ctx.rotate(-(rotate+90)* Math.PI / 180);
-                ctx.fillStyle=this.randomColor();
+                if(type!="h"){
+                    ctx.fillStyle=mainColor;
+                }
+
                 ctx.fillRect(0,0,width,height );
                 ctx.translate(-x,-y);
                 ctx.font="30px Arial";
-                ctx.fillStyle="black";
-                ctx.fillText(value,x+(width/2)-15,y+width/2);
+                ctx.fillStyle="green";
+
+                    if(rotate){
+
+                        ctx.translate(x,y);
+                        ctx.rotate((rotate+90)* Math.PI / 180);
+                        ctx.fillText(value,0,-width/2);
+                        ctx.rotate(-(rotate+90)* Math.PI / 180);
+                        ctx.translate(-x,-y);
+
+                    }else{
+                        ctx.fillText(value,x+(width/2)-15,y+width/2);
+                    }
+
                 ctx.stroke();
-                this.drawingInnerLines({x,y,width,scale,ctx,value});
-                
+                this.drawingInnerLines({x,y,width,scale,ctx,value,type});
         ctx.restore();
         ctx.stroke();
         window.ctx=ctx;
     }
     
-    drawingInnerLines({x=0,y=0,width,scale,ctx,value}){
+    drawingInnerLines({x=0,y=0,width,scale,ctx,value,type}){
             // console.log(data);
             let horizontalLines=[];
             let verticalLines=[];
@@ -184,7 +205,15 @@ class index extends Component{
                 verticalLines.push([x2+width,y2]);
             } 
             // console.log('horizontal lines',horizontalLines);
+            if(type=="h"){
+                    console.log('hi this is hypotaneus working on its lines');
+                    // console.log(verticalLines,horizontalLines);
+                    this.paintingHRect({verticalLines,horizontalLines,scale,width});
+            }
            
+    }
+    paintingHRect=({verticalLines,horizontalLines})=>{
+            console.log(verticalLines,horizontalLines);
     }
     drawTriangle=({canvas,ctx,a,b,c})=>{
         ctx.beginPath();
