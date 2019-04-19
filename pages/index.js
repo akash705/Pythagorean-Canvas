@@ -22,14 +22,16 @@ class index extends Component{
        return randomColor();
    }
    validation=({a,b,c})=>{
-       if(!a){
-        return {status:false,error:"Value a is Invalid"};
+       console.log(!a,!b,!c);
+       console.log()
+       if(!Number(a)){
+        return {status:false,error:"value 'A' is Invalid"};
        }
-       else if(!b){
-            return {status:false,error:"Value b is Invalid"}
+       else if(!Number(b)){
+            return {status:false,error:"value 'B' is Invalid"}
        }
-       else if(!c){
-           return {status:false,error:"Value c is Invalid"};
+       else if(!Number(c)){
+           return {status:false,error:"value 'C' is Invalid"};
        }
        // perpendicular samllest one    
        let sqa=Math.pow(a,2);
@@ -41,15 +43,15 @@ class index extends Component{
        if(sqc===(sqa+sqb)){
            
         // comment this if to changes the swapping of variables
-             if(a < b){
-                 console.log('changing sqa,sqb');
-                 [a,b]=[b,a];
-             }
+            //  if(a < b){
+            //      console.log('changing sqa,sqb');
+            //      [a,b]=[b,a];
+            //  }
 
             return {status:true,a,b,c};
 
         }
-       return {status:false,error:"Invalid Properties values"};
+       return {status:false,error:"Values Don't pass Pythagoras Theorem"};
    }
    componentDidMount(){
         // console.log(Objet.key)
@@ -152,6 +154,9 @@ class index extends Component{
                 ctx.fillStyle=this.randomColor();
                 ctx.fillRect(0,0,width,height );
                 ctx.translate(-x,-y);
+                ctx.font="30px Arial";
+                ctx.fillStyle="black";
+                ctx.fillText(value,x+(width/2)-15,y+width/2);
                 ctx.stroke();
                 this.drawingInnerLines({x,y,width,scale,ctx,value});
                 
@@ -194,7 +199,7 @@ class index extends Component{
     }
     drawTriangle=({canvas,ctx,a,b,c})=>{
         ctx.beginPath();
-        let scaleFactor=20;
+        let scaleFactor=(c<30) ? 30:15
         
         let initialPoint=[window.innerWidth/2,window.innerHeight/2];
         let points=[[...initialPoint]];
@@ -215,7 +220,8 @@ class index extends Component{
         
         ctx.lineTo(x,y);
         
-        
+        ctx.fillStyle="yellow";
+        ctx.fill();
         ctx.closePath();
         ctx.strokeStyle="#333";
         ctx.stroke();    
@@ -228,7 +234,27 @@ class index extends Component{
         if(this.state.checking || this.state.error){
                 return  (
                     <React.Fragment>
-                               {this.state.error || "Wait loading..."} 
+                               <div className="msg">
+                                        {this.state.error || "Wait loading..."} 
+                               </div>
+                               <div className="instruction">
+                                            <p> Query Params : </p>
+                                            <p> 'a' , 'b' can be interchanged for Base And Perpendicular</p>
+                                            <p> 'c' Must be hypotenuse </p>
+                                </div>
+                               <style jsx>{`
+                                    .msg{
+                                        font-weight:bold;
+                                        width:100%;
+                                        font-size:2rem;
+                                        text-align:center;
+                                    }
+                                    .instruction p {
+                                        font-weight:bold;
+                                        font-color:#424242;
+                                    }
+                               `}
+                               </style>
                     </React.Fragment>
                 )
         }
