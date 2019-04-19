@@ -22,8 +22,6 @@ class index extends Component{
        return randomColor();
    }
    validation=({a,b,c})=>{
-       console.log(!a,!b,!c);
-       console.log()
        if(!Number(a)){
         return {status:false,error:"value 'A' is Invalid"};
        }
@@ -33,23 +31,15 @@ class index extends Component{
        else if(!Number(c)){
            return {status:false,error:"value 'C' is Invalid"};
        }
-       // perpendicular samllest one    
+       // perpendicular     
        let sqa=Math.pow(a,2);
-       // perpendicular middle one
+       // base
        let sqb=Math.pow(b,2);
        // h    
        let sqc=Math.pow(c,2);
 
        if(sqc===(sqa+sqb)){
-           
-        // comment this if to changes the swapping of variables
-            //  if(a < b){
-            //      console.log('changing sqa,sqb');
-            //      [a,b]=[b,a];
-            //  }
-
             return {status:true,a,b,c};
-
         }
        return {status:false,error:"Values Don't pass Pythagoras Theorem"};
    }
@@ -95,7 +85,6 @@ class index extends Component{
 
     }
     setupCanvas=({a,b,c})=>{
-        // artificial Delay to show come calculations are being made for this
         setTimeout(data=>{
                 
         let canvas = this.canvas = this.refs.canvasCtx
