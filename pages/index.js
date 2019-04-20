@@ -147,7 +147,7 @@ class index extends Component{
 
     //    for perpendicular
         {
-            let width1 = this.getWidth([...points[0],...points[1]]);
+                let width1 = this.getWidth([...points[0],...points[1]]);
                 this.drawRectangle({
                     ctx:ctx,
                     points:points[0],
