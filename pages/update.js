@@ -14,7 +14,7 @@ class Updated extends Component{
     constructor(props){
             super(props);
     }
-    static async  getInitialProps({props,query}){
+    static   getInitialProps({props,query}){
         // basic validation
         if(!query || !Object.keys(query).length){
             return ({
@@ -23,7 +23,7 @@ class Updated extends Component{
             });
         }
         // Checking for valid Data 
-        let {a,b,c} = query;
+        let {a,b,c} = query || props;
         let status,error;
         ({status:status,a=a,b=b,c=c,error} = validation({a,b,c}));
       
@@ -33,19 +33,18 @@ class Updated extends Component{
                 error
             })
         }
-
+        
         return ({
            ...props,
            ...query,
            a,b,c,
-           color:randomColor(),
-           color2:randomColor()
+           color:'yellow' || randomColor(),
+           color2:'green'||  randomColor()
         });
     }
 
     componentDidMount(){
         if(!this.props.errorStatus){
-            console.log(this.props);
             this.setupCanvas( {perpendicular:this.props.a, base: this.props.b ,hypotenuse: this.props.c} );
         }
     }
@@ -55,7 +54,7 @@ class Updated extends Component{
             return (
                 <React.Fragment>
                     <h1>
-                                {this.props.error}
+                         {this.props.error}
                     </h1>
                     <div className="instruction">
                                 <p> Query Params : </p>
@@ -68,9 +67,7 @@ class Updated extends Component{
         // success case rendering canvas
         return (
             <React.Fragment>
-                <canvas ref={(inp)=>{this.canvas=inp}}>
-
-                </canvas>
+                <canvas ref={(inp)=>{this.canvas=inp}}></canvas>
                 <style global jsx>{`
                     
                     body{
@@ -84,6 +81,7 @@ class Updated extends Component{
 
 
     setupCanvas=({perpendicular:a,base:b,hypotenuse:c})=>{
+        if(!this.canvas)return 0;
         this.canvas.width = window.innerWidth - 20;
         this.canvas.height = window.innerHeight * 2;
         this.ctx = this.canvas.getContext("2d");
@@ -199,7 +197,6 @@ class Updated extends Component{
             }else{
                 points= horizontalLines[0];
                 let x = points[0]-(distance);
-                console.log('last point',x,points[1]);
                 ctx.fillRect(x,points[1]-distance,distance,distance);
 
             }

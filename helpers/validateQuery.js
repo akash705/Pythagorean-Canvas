@@ -1,6 +1,6 @@
 // helper function 
 const validation=({a,b,c})=>{
-    console.log(a,b,c);
+    console.log('validation called');
     if(!Number(a)){
      return {status:false,error:"value 'A' is Invalid"};
     }
